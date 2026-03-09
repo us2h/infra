@@ -5,3 +5,7 @@
 *.tfstate.backup
 *.auto.tfvars
 secrets.tfvars
+
+# MacOS
+.DS_Store
+

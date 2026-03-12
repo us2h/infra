@@ -3,7 +3,10 @@ locals {
   ### Proxmox provider configuration
   ###
 
-  proxmox_endpoint          = "https://192.168.1.11:8006/"
+  proxmox_endpoints = {
+    "hv1" = "https://192.168.1.11:8006/"
+    "hv2" = "https://192.168.1.12:8006/"
+  }
   proxmox_username          = "root@pam"
   proxmox_tls_insecure      = true
   proxmox_ssh_agent_enabled = true

@@ -29,7 +29,7 @@ generate "provider" {
   if_exists = "overwrite_terragrunt"
   contents  = <<-EOT
     provider "proxmox" {
-      endpoint = "${local.env.proxmox_endpoint}"
+      endpoint = var.proxmox_endpoint
       username = "${local.env.proxmox_username}"
       password = var.proxmox_password
       insecure = ${local.env.proxmox_tls_insecure}
@@ -45,6 +45,11 @@ generate "provider" {
         }
         %{~ endfor ~}
       }
+    }
+
+    variable "proxmox_endpoint" {
+      description = "Proxmox API endpoint URL"
+      type        = string
     }
 
     variable "proxmox_password" {

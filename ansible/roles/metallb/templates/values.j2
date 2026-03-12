@@ -1,0 +1,12 @@
+controller:
+  nodeSelector:
+    node-role.kubernetes.io/worker: "true"
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      effect: NoSchedule
+speaker:
+  nodeSelector:
+    node-role.kubernetes.io/worker: "true"
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      effect: NoSchedule

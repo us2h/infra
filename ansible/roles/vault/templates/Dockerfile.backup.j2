@@ -1,0 +1,10 @@
+FROM hashicorp/vault:{{ vault_version }}
+
+RUN apk add --no-cache curl bash busybox-suid aws-cli jq
+
+COPY backup.sh /usr/local/bin/backup.sh
+COPY crontab /etc/crontabs/root
+
+RUN chmod +x /usr/local/bin/backup.sh
+
+CMD ["crond", "-f", "-d", "8"]

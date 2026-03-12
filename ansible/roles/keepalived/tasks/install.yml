@@ -1,0 +1,20 @@
+- name: Install keepalived package
+  apt:
+    name: keepalived
+    state: present
+    update_cache: true
+
+- name: Copy keepalived configuration
+  template:
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart keepalived
+
+- name: Ensure keepalived is running and enabled
+  systemd:
+    name: keepalived
+    enabled: true
+    state: started

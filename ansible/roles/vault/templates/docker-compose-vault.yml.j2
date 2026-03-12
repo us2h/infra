@@ -1,0 +1,59 @@
+services:
+  vault:
+    image: hashicorp/vault:{{ vault_version }}
+    container_name: vault
+    restart: unless-stopped
+    ports:
+      - "{{ vault_port }}:{{ vault_port }}"
+      - "{{ vault_cluster_port }}:{{ vault_cluster_port }}"
+    volumes:
+      - ./data/logs:/vault/logs/:rw
+      - ./data/data:/vault/data/:rw
+      - ./data/config:/vault/config/:rw
+      - ./data/ssl:/vault/ssl/:rw
+      - ./data/file:/vault/file/:rw
+    cap_add:
+      - IPC_LOCK
+    environment:
+      - VAULT_CONFIG_DIR=/vault/config
+      - VAULT_LOG_LEVEL=trace
+    command: ["vault", "server", "-config=/vault/config/vault.hcl"]
+    healthcheck:
+      test: ["CMD", "vault", "status", "-tls-skip-verify"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - vault-network
+
+  vault-backup:
+    build:
+      context: ./backup
+    container_name: vault-backup
+    restart: unless-stopped
+    volumes:
+      - ./data/file:/vault/file:rw
+    environment:
+      - VAULT_ADDR=https://vault:{{ vault_port }}
+      - VAULT_SKIP_VERIFY=true
+      - VAULT_TOKEN={{ vault_backup_token }}
+      - VAULT_BACKUP_BUCKET={{ vault_backup_bucket }}
+      - AWS_ACCESS_KEY_ID={{ vault_backup_aws_access_key_id }}
+      - AWS_SECRET_ACCESS_KEY={{ vault_backup_aws_secret_access_key }}
+      - AWS_DEFAULT_REGION={{ vault_backup_aws_region }}
+      - AWS_ENDPOINT={{ vault_backup_aws_endpoint }}
+    depends_on:
+      - vault
+    networks:
+      - vault-network
+
+volumes:
+  vault-data:
+    driver: local
+  vault-logs:
+    driver: local
+
+networks:
+  vault-network:
+    driver: bridge

@@ -1,0 +1,7 @@
+---
+- name: restart vault
+  community.docker.docker_compose_v2:
+    project_src: /opt/vault
+    state: present
+    recreate: always
+  become: yes

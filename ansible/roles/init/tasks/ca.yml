@@ -1,0 +1,17 @@
+- name: Ensure custom CA certificate directory exists
+  file:
+    path: /usr/local/share/ca-certificates
+    state: directory
+    mode: '0755'
+
+- name: Copy custom CA certificate
+  copy:
+    content: "{{ us2h_home_ca_cert }}"
+    dest: "/usr/local/share/ca-certificates/{{ custom_ca_cert_name }}.crt"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Update trusted CA certificates (Debian-based)
+  command: update-ca-certificates
+  when: ansible_facts['os_family'] == "Debian"

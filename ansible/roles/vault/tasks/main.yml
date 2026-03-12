@@ -1,0 +1,6 @@
+---
+- include_tasks: directories.yml
+- include_tasks: certificates.yml
+- include_tasks: templates.yml
+- include_tasks: start.yml
+- include_tasks: nginx.yml

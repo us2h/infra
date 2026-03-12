@@ -1,0 +1,32 @@
+- hosts: master_nodes, worker_nodes
+  become: yes
+  roles:
+    - init
+    - docker
+    - kubernetes
+  vars_files:
+    - vars/k8s.yml
+
+- hosts: master_nodes
+  become: yes
+  roles:
+    - master
+  vars_files:
+    - vars/k8s.yml
+
+- hosts: worker_nodes
+  become: yes
+  serial: 1
+  roles:
+    - worker
+  vars_files:
+    - vars/k8s.yml
+
+- hosts: master_nodes[0]
+  roles:
+    - control-node
+    - network
+    - fluxcd
+    - local-kubectl
+  vars_files:
+    - vars/k8s.yml

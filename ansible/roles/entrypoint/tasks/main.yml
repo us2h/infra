@@ -1,0 +1,3 @@
+- include_tasks: prerequisites.yml
+- include_tasks: wireguard-install.yml
+- include_tasks: wireguard-generate-keys.yml

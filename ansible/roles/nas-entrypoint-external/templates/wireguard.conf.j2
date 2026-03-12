@@ -1,0 +1,8 @@
+[Interface]
+PrivateKey = {{ external_private_key }}
+Address = {{ external_connection.external_wireguard_ip }}/24
+ListenPort = 51820
+
+[Peer]
+PublicKey = {{ internal_public_key }}
+AllowedIPs = {{ external_connection.internal_wireguard_ip }}/32

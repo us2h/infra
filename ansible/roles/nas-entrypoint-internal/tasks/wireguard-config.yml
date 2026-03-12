@@ -1,0 +1,15 @@
+- name: Fetch external node's public key
+  set_fact:
+    external_public_key: "{{ hostvars['nas-entrypoint-external']['wg_public_key'] }}"
+
+- name: Fetch internal node's private key
+  set_fact:
+    internal_private_key: "{{ hostvars['nas-entrypoint-internal']['wg_private_key'] }}"
+  
+- name: Generate internal node configuration
+  template:
+    src: wireguard.conf.j2
+    dest: /etc/wireguard/{{ external_connection.wireguard_interface }}.conf
+    owner: root
+    group: root
+    mode: 0600

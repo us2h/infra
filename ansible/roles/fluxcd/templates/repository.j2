@@ -1,0 +1,12 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: flux-system
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: {{ fluxcd.repository }}
+  secretRef:
+    name: flux-system-ssh-key
+  ref:
+    branch: {{ fluxcd.branch }}

@@ -1,0 +1,9 @@
+- name: Install FluxCD to the cluster
+  shell: | 
+    helm install -n flux-system \
+    --create-namespace flux \
+    oci://ghcr.io/fluxcd-community/charts/flux2
+  args:
+    executable: /bin/bash
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

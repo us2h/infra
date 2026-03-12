@@ -1,0 +1,17 @@
+- name: Generate values.yaml for Ingress Nginx
+  template:
+    src: values.j2
+    dest: /tmp/ingress-nginx-values.yaml
+
+- name: Install Ingress Nginx Helm chart
+  shell: | 
+    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+    helm repo update
+    kubectl create namespace ingress-nginx
+    helm install ingress-nginx ingress-nginx/ingress-nginx \
+    --namespace ingress-nginx \
+    --values /tmp/ingress-nginx-values.yaml
+  args:
+    executable: /bin/bash
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

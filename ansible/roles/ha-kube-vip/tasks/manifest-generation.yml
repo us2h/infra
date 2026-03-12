@@ -1,0 +1,22 @@
+---
+- block:
+  - name: Gather network interface facts
+    setup:
+      filter: ansible_default_ipv4
+
+  - name: Set the active network interface as a fact
+    set_fact:
+      active_interface: "{{ ansible_default_ipv4.interface }}"
+
+  - name: Generate kube-vip manifest
+    shell: |
+      docker run --rm plndr/kube-vip:v{{ kube_vip.version }} manifest pod \
+        --interface {{ active_interface }} \
+        --vip {{ ha.vip }} \
+        --controlplane \
+        --services \
+        --arp \
+        --leaderElection | sudo tee /etc/kubernetes/manifests/kube-vip.yaml
+    args:
+      executable: /bin/bash
+  when: ha.enabled

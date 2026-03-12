@@ -1,0 +1,17 @@
+defaultSettings:
+  # Create disk on storage node only (nodes with the label longhorn.io/storage-node=true)
+  createDefaultDiskLabeledNodes: true
+  # Override the default disk location path
+  defaultDataPath: "{{ longhorn.data_path }}"
+  # Percentage of the disk that is reserved for the system (not for Longhorn)
+  storageReservedPercentageForDefaultDisk: 5
+  
+  ### S3 storage for backups
+  # s3://<bucket-name>@<region>/<directory>
+  backupTarget: s3://home-k8s-longhorn-backups@nas/longhorn
+  # The k8s secret that contains the credentials for the backup target
+  backupTargetCredentialSecret: longhorn-minio-credentials
+
+persistence:
+  # Don't delete PV disk when deleting PVC
+  reclaimPolicy: Retain

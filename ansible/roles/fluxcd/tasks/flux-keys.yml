@@ -1,0 +1,24 @@
+- name: Copy Flux SSH key to the remote host
+  copy:
+    src: keys/fluxcd
+    dest: /tmp/fluxcd
+    mode: '0600'
+
+- name: Add GitHub SSH key to known_hosts
+  shell:
+    cmd: ssh-keyscan -t rsa,ecdsa,ed25519 github.com > known_hosts
+  args:
+    chdir: /tmp/
+
+- name: Create secret with SSH key
+  command:
+    cmd: >
+      kubectl create secret generic flux-system-ssh-key
+      --namespace=flux-system
+      --from-file=identity=fluxcd
+      --from-file=known_hosts=known_hosts
+  args:
+    chdir: /tmp/
+    executable: /bin/bash
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

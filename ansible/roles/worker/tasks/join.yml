@@ -1,0 +1,33 @@
+- name: Wait for cluster to initialize
+  pause:
+    seconds: 10
+
+- name: Convert node_labels list to string
+  set_fact:
+    node_labels_string: "{{ node_labels | join(',') }}"
+
+- name: Create kubeadm join configuration file with labels
+  copy:
+    dest: /tmp/kubeadm-join-config.yaml
+    content: |
+      apiVersion: kubeadm.k8s.io/v1beta3
+      kind: JoinConfiguration
+      discovery:
+        bootstrapToken:
+          apiServerEndpoint: "{{ control_plane_address }}:6443"
+          token: "{{ hostvars[groups['master_nodes'][0]].bootstrap_token }}"
+          caCertHashes:
+            - "{{ hostvars[groups['master_nodes'][0]].discovery_token_ca_cert_hash }}"
+      nodeRegistration:
+        name: "{{ inventory_hostname }}"
+        kubeletExtraArgs:
+          node-labels: "{{ node_labels_string }}"
+
+- name: Join cluster
+  shell: kubeadm join --config /tmp/kubeadm-join-config.yaml
+  args:
+    executable: /bin/bash
+  register: join_result
+  retries: 5
+  delay: 10
+  until: join_result.rc == 0

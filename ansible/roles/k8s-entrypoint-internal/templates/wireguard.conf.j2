@@ -1,0 +1,9 @@
+[Interface]
+PrivateKey = {{ internal_private_key }}
+Address = {{ external_connection.internal_wireguard_ip }}/24
+
+[Peer]
+PublicKey = {{ external_public_key }}
+Endpoint = {{ hostvars['k8s-entrypoint-external']['ip_address'] }}:51820
+AllowedIPs = {{ external_connection.external_wireguard_ip }}/32
+PersistentKeepalive = 25

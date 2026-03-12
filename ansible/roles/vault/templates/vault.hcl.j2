@@ -1,0 +1,29 @@
+ui = true
+disable_mlock = true
+storage "raft" {
+  path = "/vault/data"
+  node_id = "{{ vault_node_id }}"
+{% if inventory_hostname != groups['rpi_cluster'][0] %}
+  retry_join {
+    leader_api_addr = "{{ hostvars[groups['rpi_cluster'][0]]['vault_api_addr'] }}"
+    leader_ca_cert_file = "/vault/ssl/ca.pem"
+    leader_client_cert_file = "/vault/ssl/star_us2h_home_cert.pem"
+    leader_client_key_file = "/vault/ssl/star_us2h_home_key.pem"
+  }
+{% endif %}
+}
+listener "tcp" {
+  address = "0.0.0.0:{{ vault_port }}"
+  tls_cert_file = "/vault/ssl/star_us2h_home_cert.pem"
+  tls_key_file = "/vault/ssl/star_us2h_home_key.pem"
+  # Remove tls_ca_file - it's not a valid parameter
+  # If you need client cert validation, use:
+  # tls_client_ca_file = "/vault/ssl/ca.pem"
+  # tls_require_and_verify_client_cert = true
+}
+cluster_addr = "https://{{ ansible_default_ipv4.address }}:{{ vault_cluster_port }}"
+api_addr = "{{ vault_api_addr }}"
+log_level = "INFO"
+log_file = "/vault/logs/vault.log"
+log_rotate_duration = "24h"
+log_rotate_max_files = 7

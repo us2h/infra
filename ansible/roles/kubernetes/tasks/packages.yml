@@ -1,0 +1,8 @@
+- name: Installing Kubernetes packages.
+  apt: 
+    name:
+      - kubeadm
+      - kubectl
+      - kubelet
+    state: present
+    update_cache: yes

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DATE=$(date +%Y-%m-%d-%H%M%S)
+TMP_FILE="/tmp/vault-snapshot-${DATE}.snap"
+
+# Determine the leader
+LEADER_ADDR=$(VAULT_ADDR=$VAULT_ADDR VAULT_TOKEN=$VAULT_TOKEN \
+  vault status -format=json | jq -r '.leader_address')
+
+if [ -z "$LEADER_ADDR" ] || [ "$LEADER_ADDR" == "null" ]; then
+echo "Failed to determine Vault leader"
+  exit 1
+fi
+
+echo "Leader Vault: $LEADER_ADDR"
+
+# Create a temporary file for the snapshot
+VAULT_ADDR="$LEADER_ADDR" \
+VAULT_SKIP_VERIFY="${VAULT_SKIP_VERIFY:-false}" \
+VAULT_TOKEN="$VAULT_TOKEN" \
+vault operator raft snapshot save "$TMP_FILE"
+
+# Send the snapshot to S3
+aws --endpoint-url="$AWS_ENDPOINT" \
+    s3 cp "$TMP_FILE" "s3://$VAULT_BACKUP_BUCKET/backup-${DATE}.snap"
+
+echo "Backup uploaded to Wasabi: s3://$VAULT_BACKUP_BUCKET/backup-${DATE}.snap"
+
+# Clean up the temporary file
+rm -f "$TMP_FILE"

@@ -1,0 +1,15 @@
+external_connection:
+  wireguard_interface: wg0
+  external_wireguard_ip: 10.0.0.1
+  internal_wireguard_ip: 10.0.0.2
+  entrypoints:
+    - name: "ingress"
+      forward_ports:
+        - { src: 80, dest: 80, proto: "tcp" }
+        - { src: 443, dest: 443, proto: "tcp" }
+      destination_lb_ip: 192.168.1.150
+
+    - name: "factorio-server"
+      forward_ports:
+        - { src: 34197, dest: 34197, proto: "udp" }
+      destination_lb_ip: 192.168.1.151

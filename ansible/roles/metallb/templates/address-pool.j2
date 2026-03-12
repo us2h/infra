@@ -1,0 +1,23 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: ip-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - {{ metallb.address }}
+
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: l2-advertisement
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - ip-pool
+  nodeSelectors:
+{% for host in groups['worker_nodes'] %}
+  - matchLabels:
+      kubernetes.io/hostname: {{ host }}
+{% endfor %}

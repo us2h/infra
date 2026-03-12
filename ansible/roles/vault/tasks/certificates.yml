@@ -1,0 +1,12 @@
+- name: Copy SSL certificates
+  copy:
+    content: "{{ item.content }}"
+    dest: "{{ item.dest }}"
+    mode: '0600'
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+  loop:
+    - { content: "{{ us2h_home_ca_cert }}", dest: "/opt/vault/data/ssl/ca.pem" }
+    - { content: "{{ star_us2h_home_cert }}", dest: "/opt/vault/data/ssl/star_us2h_home_cert.pem" }
+    - { content: "{{ star_us2h_home_key }}", dest: "/opt/vault/data/ssl/star_us2h_home_key.pem" }
+  no_log: true

@@ -1,0 +1,5 @@
+- name: Start WireGuard service
+  systemd:
+    name: wg-quick@{{ external_connection.wireguard_interface }}.service
+    state: started
+    enabled: true

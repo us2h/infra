@@ -1,0 +1,18 @@
+- hosts: entrypoint_nodes
+  roles:
+    - init
+    - entrypoint
+  vars_files:
+    - vars/k8s-entrypoints.yml
+
+- hosts: k8s-entrypoint-external
+  roles:
+    - k8s-entrypoint-external
+  vars_files:
+    - vars/k8s-entrypoints.yml
+
+- hosts: k8s-entrypoint-internal
+  roles:
+    - k8s-entrypoint-internal
+  vars_files:
+    - vars/k8s-entrypoints.yml

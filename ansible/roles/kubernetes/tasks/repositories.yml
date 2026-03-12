@@ -1,0 +1,24 @@
+- name: Ensure /etc/apt/keyrings exists
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Add Kubernetes signing key
+  apt_key:
+    url: https://dl.k8s.io/apt/doc/apt-key.gpg
+    state: present
+    keyring: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+- name: Add additional public key
+  apt_key:
+    id: 234654DA9A296436
+    keyserver: keyserver.ubuntu.com
+    state: present
+
+- name: Add Kubernetes apt repository
+  apt_repository:
+    repo: "deb https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/ /"
+    state: present
+    filename: kubernetes.list
+    update_cache: yes

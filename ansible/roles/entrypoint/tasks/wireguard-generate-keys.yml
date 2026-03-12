@@ -1,0 +1,39 @@
+- name: Ensure WireGuard keys directory exists
+  file:
+    path: /etc/wireguard/keys
+    state: directory
+    mode: '0700'
+
+- name: Generate WireGuard private key
+  command: "wg genkey"
+  register: private_key
+  args:
+    chdir: /etc/wireguard/keys
+  environment:
+    UMASK: "077"
+
+- name: Save private key to file
+  copy:
+    content: "{{ private_key.stdout }}"
+    dest: /etc/wireguard/keys/privatekey
+    mode: '0600'
+
+- name: Generate WireGuard public key
+  shell: "echo '{{ private_key.stdout }}' | wg pubkey"
+  register: public_key
+  args:
+    chdir: /etc/wireguard/keys
+
+- name: Save public key to file
+  copy:
+    content: "{{ public_key.stdout }}"
+    dest: /etc/wireguard/keys/publickey
+    mode: '0644'
+
+- name: Save private key as host fact
+  set_fact:
+    wg_private_key: "{{ private_key.stdout }}"
+
+- name: Save public key as host fact
+  set_fact:
+    wg_public_key: "{{ public_key.stdout }}"

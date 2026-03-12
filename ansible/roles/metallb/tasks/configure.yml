@@ -1,0 +1,15 @@
+- name: Wait for MetalLB components to initialize
+  pause:
+    seconds: 60
+
+- name: Render MetalLB addresses pool configuration
+  template:
+    src: address-pool.j2
+    dest: /tmp/address-pool.yaml
+
+- name: Apply MetalLB addresses pool configuration
+  shell: kubectl apply -f /tmp/address-pool.yaml
+  args:
+    executable: /bin/bash
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

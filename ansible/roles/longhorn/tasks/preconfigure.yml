@@ -1,0 +1,8 @@
+- name: Label storage nodes with Longhorn default disk label
+  shell: |
+    kubectl label nodes {{ item }} node.longhorn.io/create-default-disk=true --overwrite
+  with_items: "{{ groups['storage_nodes'] }}"
+  args:
+    executable: /bin/bash
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

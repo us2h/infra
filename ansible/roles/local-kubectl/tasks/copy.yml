@@ -1,0 +1,7 @@
+- name: Copy admin config to local machine
+  fetch:
+    src: "/etc/kubernetes/admin.conf"
+    dest: "{{ local_kube_dir }}/config"
+    flat: yes
+  become: yes
+  delegate_to: "{{ groups['master_nodes'][0] }}"

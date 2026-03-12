@@ -1,0 +1,44 @@
+- name: Generate vault configuration
+  template:
+    src: vault.hcl.j2
+    dest: /opt/vault/data/config/vault.hcl
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: '0644'
+  notify: restart vault
+
+- name: Generate docker-compose file
+  template:
+    src: docker-compose-vault.yml.j2
+    dest: /opt/vault/docker-compose.yml
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: '0644'
+  notify: restart vault
+
+- name: Generate backup Dockerfile
+  template:
+    src: Dockerfile.backup.j2
+    dest: /opt/vault/backup/Dockerfile
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: '0644'
+  notify: restart vault
+
+- name: Generate backup script
+  template:
+    src: backup.sh.j2
+    dest: /opt/vault/backup/backup.sh
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: '0755'
+  notify: restart vault
+
+- name: Generate crontab file
+  template:
+    src: crontab.j2
+    dest: /opt/vault/backup/crontab
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart vault

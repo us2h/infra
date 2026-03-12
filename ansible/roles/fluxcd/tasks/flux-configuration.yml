@@ -1,0 +1,19 @@
+- name: Generate repository configuration for FluxCD
+  template:
+    src: repository.j2
+    dest: /tmp/fluxcd-repository.yaml
+
+- name: Generate kustomization configuration for FluxCD
+  template:
+    src: kustomization.j2
+    dest: /tmp/fluxcd-kustomization.yaml
+
+- name: Apply repository configuration
+  shell: | 
+    kubectl apply -f /tmp/fluxcd-repository.yaml && \
+    kubectl apply -f /tmp/fluxcd-kustomization.yaml && \
+    kubectl rollout restart deployment/source-controller -n flux-system
+  args:
+    executable: /bin/bash
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

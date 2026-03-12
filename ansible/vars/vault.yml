@@ -1,0 +1,18 @@
+# Vault installation and configuration variables
+vault_user: dhcpcd
+vault_group: gpio
+vault_version: 1.19.5
+vault_scheme: https
+vault_port: 8200
+vault_cluster_port: 8201
+
+# Vault access configuration
+vault_nginx_vhost_name: vault.us2h.home
+vault_nginx_dir: /opt/vault-nginx
+vault_nginx_cert_path: "{{ vault_nginx_dir }}/certs/{{ vault_nginx_vhost_name }}.crt"
+vault_nginx_key_path: "{{ vault_nginx_dir }}/certs/{{ vault_nginx_vhost_name }}.key"
+
+# Backup configuration
+vault_backup_bucket: us2h-home-vault-backup
+vault_backup_aws_region: us-east-1
+vault_backup_aws_endpoint: https://s3.wasabisys.com

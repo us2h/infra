@@ -1,0 +1,8 @@
+- name: Label worker nodes
+  shell: |
+    kubectl label nodes {{ item }} node-role.kubernetes.io/worker=true --overwrite
+  with_items: "{{ groups['worker_nodes'] }}"
+  args:
+    executable: /bin/bash
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

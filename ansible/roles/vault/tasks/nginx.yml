@@ -1,0 +1,42 @@
+
+- name: Create certificates directory
+  file:
+    path: "{{ vault_nginx_dir }}/certs"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+
+- name: Copy certificate
+  copy:
+    content: "{{ star_us2h_home_cert }}"
+    dest: "{{ vault_nginx_cert_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+
+- name: Copy key
+  copy:
+    content: "{{ star_us2h_home_key }}"
+    dest: "{{ vault_nginx_key_path }}"
+    owner: root
+    group: root
+    mode: '0600'
+  become: true
+
+- name: Prepare configuration files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - { src: 'nginx.conf.j2', dest: "{{ vault_nginx_dir }}/nginx.conf" }
+    - { src: 'docker-compose-nginx.yml.j2', dest: "{{ vault_nginx_dir }}/docker-compose.yml" }
+  become: true
+
+- name: Start nginx via docker-compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ vault_nginx_dir }}"
+    state: present
+  become: true

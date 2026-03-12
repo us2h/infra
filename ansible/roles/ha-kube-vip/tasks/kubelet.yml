@@ -1,0 +1,32 @@
+- name: Create kubeadm-config.yaml for master node
+  copy:
+    dest: /etc/kubernetes/kubeadm-config.yaml
+    content: |
+      apiVersion: kubeadm.k8s.io/v1beta3
+      kind: InitConfiguration
+      bootstrapTokens:
+        - token: "9a08jv.c0izixklcxtmnze7"
+      description: "kubeadm bootstrap token"
+      ttl: "24h"
+      nodeRegistration:
+        criSocket: "/var/run/containerd/containerd.sock"
+
+      ---
+      apiVersion: kubeadm.k8s.io/v1beta3
+      kind: ClusterConfiguration
+      controlPlaneEndpoint: "{{ ha.vip }}:6443"
+      networking:
+        podSubnet: "{{ kubernetes_pod_network }}"
+
+      ---
+      apiVersion: kubelet.config.k8s.io/v1beta1
+      kind: KubeletConfiguration
+      cgroupDriver: "systemd"
+      protectKernelDefaults: true
+
+- name: Restart kubelet service
+  systemd:
+    name: kubelet
+    state: restarted
+    enabled: yes
+    daemon-reload: yes

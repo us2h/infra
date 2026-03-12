@@ -1,0 +1,17 @@
+- hosts: k8s-entrypoint-external
+  tasks:
+    - name: Include iptables tasks
+      include_role:
+        name: k8s-entrypoint-external
+        tasks_from: iptables.yml
+  vars_files:
+    - vars/k8s-entrypoints.yml
+
+- hosts: k8s-entrypoint-internal
+  tasks:
+    - name: Include iptables tasks
+      include_role:
+        name: k8s-entrypoint-internal
+        tasks_from: iptables.yml
+  vars_files:
+    - vars/k8s-entrypoints.yml

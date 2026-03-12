@@ -1,0 +1,3 @@
+---
+upgrade_type: dist
+custom_ca_cert_name: "us2h_home_ca"

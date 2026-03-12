@@ -1,0 +1,14 @@
+- name: Check if dm_crypt module is already loaded
+  command: lsmod
+  register: lsmod_output
+  changed_when: false
+
+- name: Load dm_crypt kernel module if not loaded
+  command: modprobe dm_crypt
+  when: "'dm_crypt' not in lsmod_output.stdout"
+
+- name: Ensure dm_crypt module is loaded at boot
+  lineinfile:
+    path: /etc/modules
+    line: dm_crypt
+    state: present

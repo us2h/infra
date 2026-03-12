@@ -1,0 +1,14 @@
+- name: Create vault directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: '0755'
+  loop:
+    - /opt/vault/data/data
+    - /opt/vault/data/logs
+    - /opt/vault/data/config
+    - /opt/vault/data/ssl
+    - /opt/vault/data/file
+    - /opt/vault/backup

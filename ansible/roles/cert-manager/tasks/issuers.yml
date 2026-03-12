@@ -1,0 +1,11 @@
+- name: Create temporary issuers manifest file
+  template:
+    src: issuers.j2
+    dest: /tmp/issuers.yaml
+
+- name: Apply issuers address pool configuration
+  shell: kubectl apply -f /tmp/issuers.yaml
+  args:
+    executable: /bin/bash
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

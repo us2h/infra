@@ -1,0 +1,15 @@
+- name: Fetch internal node's public key
+  set_fact:
+    internal_public_key: "{{ hostvars['k8s-entrypoint-internal']['wg_public_key'] }}"
+
+- name: Fetch external node's private key
+  set_fact:
+    external_private_key: "{{ hostvars['k8s-entrypoint-external']['wg_private_key'] }}"
+
+- name: Generate external node configuration
+  template:
+    src: wireguard.conf.j2
+    dest: /etc/wireguard/{{ external_connection.wireguard_interface }}.conf
+    owner: root
+    group: root
+    mode: 0600

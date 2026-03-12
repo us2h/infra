@@ -1,0 +1,24 @@
+- name: Install prerequisites APT packages
+  apt:
+    name:
+      # Common dependencies
+      - apt-transport-https
+      - ca-certificates
+      - bash
+      - curl
+      - gnupg2
+      - lsb-release
+      - socat
+      - cryptsetup
+      # Longhorn dependencies
+      - open-iscsi
+      - nfs-common
+    state: present
+    update_cache: yes
+
+- name: Uninstall conflicting packages
+  apt:
+    name:
+      - multipath-tools
+    state: absent
+  when: ansible_distribution == 'Ubuntu'

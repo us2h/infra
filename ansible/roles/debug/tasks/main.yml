@@ -1,0 +1,9 @@
+- name: Print iptables command
+  debug:
+    msg: "iptables -t nat -A PREROUTING -p tcp --dport {{ item.src }} -j DNAT --to-destination {{ entrypoint.destination_lb_ip }}:{{ item.dest }}"
+  loop: "{{ entrypoint.forward_ports }}"
+
+- name: Forward traffic to specified ports
+  command:
+    cmd: "iptables -t nat -A PREROUTING -p tcp --dport {{ item.src }} -j DNAT --to-destination {{ entrypoint.destination_lb_ip }}:{{ item.dest }}"
+  loop: "{{ entrypoint.forward_ports }}"

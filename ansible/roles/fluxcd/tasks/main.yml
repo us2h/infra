@@ -1,0 +1,3 @@
+- include_tasks: flux-install.yml
+- include_tasks: flux-keys.yml
+- include_tasks: flux-configuration.yml

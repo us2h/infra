@@ -1,0 +1,20 @@
+- name: Flush existing iptables rules
+  command:
+    cmd: "iptables -F"
+
+- name: Flush existing NAT table rules
+  command:
+    cmd: "iptables -t nat -F"
+
+- name: Forward traffic to specified ports
+  command:
+    cmd: "iptables -t nat -A PREROUTING -p {{ item.1.proto }} --dport {{ item.1.src }} -j DNAT --to-destination {{ external_connection.internal_wireguard_ip }}:{{ item.1.dest }}"
+  loop: "{{ external_connection.entrypoints | subelements('forward_ports') }}"
+
+- name: Handle return traffic with MASQUERADE on {{ external_connection.wireguard_interface }}
+  command:
+    cmd: "iptables -t nat -A POSTROUTING -o {{ external_connection.wireguard_interface }} -j MASQUERADE"
+
+- name: Save iptables rules
+  command:
+    cmd: "netfilter-persistent save"

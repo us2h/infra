@@ -41,5 +41,5 @@ inputs = {
 }
 
 include "root" {
-  path = find_in_parent_folders("root.hcl")
+  path = find_in_parent_folders("proxmox_root.hcl")
 }

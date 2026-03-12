@@ -1,0 +1,44 @@
+- name: Check if vault is already initialized
+  uri:
+    url: "{{ vault_api_addr }}/v1/sys/init"
+    method: GET
+    validate_certs: no
+  register: vault_init_status
+  run_once: true
+  delegate_to: "{{ groups['vault_cluster'][0] }}"
+
+- name: Initialize vault cluster with maximum security
+  uri:
+    url: "{{ vault_api_addr }}/v1/sys/init"
+    method: PUT
+    validate_certs: no
+    body_format: json
+    body:
+      secret_shares: 10
+      secret_threshold: 6
+      pgp_keys: []
+      root_token_pgp_key: ""
+  register: vault_init_result
+  when: not vault_init_status.json.initialized
+  run_once: true
+  delegate_to: "{{ groups['vault_cluster'][0] }}"
+
+- name: Save initialization output
+  copy:
+    content: |
+      Vault Initialization Results:
+      {{ vault_init_result.json | to_nice_json }}
+    dest: /tmp/vault_init_keys.json
+    mode: '0600'
+  when: vault_init_result is defined and vault_init_result.json is defined
+  run_once: true
+  delegate_to: localhost
+
+- name: Display initialization warning
+  debug:
+    msg: |
+      IMPORTANT: Vault has been initialized!
+      The unseal keys and root token have been saved to /tmp/vault_init_keys.json
+      Please secure these keys immediately and remove the file after storing them safely!
+  when: vault_init_result is defined and vault_init_result.json is defined
+  run_once: true

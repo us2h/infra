@@ -1,0 +1,49 @@
+- name: Check Vault seal status
+  uri:
+    url: "{{ vault_scheme }}://{{ hostvars[inventory_hostname].ip_address }}:{{ vault_port }}/v1/sys/seal-status"
+    method: GET
+    validate_certs: false
+    status_code: [200, 503]
+  register: seal_status
+  tags: unseal
+
+- name: Display current seal status
+  debug:
+    msg: "Node {{ inventory_hostname }} - Sealed: {{ seal_status.json.sealed }}, Progress: {{ seal_status.json.progress }}/{{ seal_status.json.t }}"
+  tags: unseal
+
+- name: Unseal Vault with multiple keys
+  uri:
+    url: "{{ vault_scheme }}://{{ hostvars[inventory_hostname].ip_address }}:{{ vault_port }}/v1/sys/unseal"
+    method: POST
+    body_format: json
+    body:
+      key: "{{ item }}"
+    validate_certs: false
+    status_code: [200]
+  register: unseal_result
+  loop: "{{ vault_unseal_keys }}"
+  when: seal_status.json.sealed | bool
+  no_log: true
+  tags: unseal
+
+- name: Verify Vault is unsealed
+  uri:
+    url: "{{ vault_scheme }}://{{ hostvars[inventory_hostname].ip_address }}:{{ vault_port }}/v1/sys/seal-status"
+    method: GET
+    validate_certs: false
+    status_code: [200]
+  register: final_status
+  tags: unseal
+
+- name: Display final status
+  debug:
+    msg: "Node {{ inventory_hostname }} unsealed successfully"
+  when: not final_status.json.sealed
+  tags: unseal
+
+- name: Fail if node is still sealed
+  fail:
+    msg: "Node {{ inventory_hostname }} is still sealed after unseal attempts"
+  when: final_status.json.sealed | bool
+  tags: unseal

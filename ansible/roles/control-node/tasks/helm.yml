@@ -1,0 +1,44 @@
+# Block for x86_64 architecture
+- block:
+    - name: Download Helm
+      get_url:
+        url: "https://get.helm.sh/helm-v{{ helm.version }}-linux-amd64.tar.gz"
+        dest: /tmp/helm.tar.gz
+
+    - name: Extract Helm
+      unarchive:
+        src: /tmp/helm.tar.gz
+        dest: /tmp/
+        remote_src: yes
+
+    - name: Move Helm binary to /usr/local/bin
+      command:
+        cmd: mv /tmp/linux-amd64/helm /usr/local/bin/helm
+      args:
+        creates: /usr/local/bin/helm
+  when: ansible_architecture == 'x86_64'
+
+# Block for aarch64 architecture
+- block:
+    - name: Download Helm
+      get_url:
+        url: "https://get.helm.sh/helm-v{{ helm.version }}-linux-arm64.tar.gz"
+        dest: /tmp/helm.tar.gz
+
+    - name: Extract Helm
+      unarchive:
+        src: /tmp/helm.tar.gz
+        dest: /tmp/
+        remote_src: yes
+
+    - name: Move Helm binary to /usr/local/bin
+      command:
+        cmd: mv /tmp/linux-arm64/helm /usr/local/bin/helm
+      args:
+        creates: /usr/local/bin/helm
+  when: ansible_architecture == 'aarch64'
+
+- name: Ensure Helm binary is executable
+  file:
+    path: /usr/local/bin/helm
+    mode: '0755'

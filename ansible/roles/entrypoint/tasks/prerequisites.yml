@@ -1,0 +1,15 @@
+- name: Enable IP forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- name: Installing iptable persistent package
+  apt: 
+    name:
+      - net-tools
+      - iptables-persistent
+    state: present
+    update_cache: yes
